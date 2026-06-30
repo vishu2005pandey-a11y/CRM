@@ -107,7 +107,7 @@ export function AddAdminDialog() {
       >
         <Plus className="mr-2 h-4 w-4" /> Add Admin
       </DialogTrigger>
-      <DialogContent className="glass-card border-white/10 sm:max-w-[425px]">
+      <DialogContent className="glass-card border-white/10 w-[95vw] max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Admin</DialogTitle>
           <DialogDescription>

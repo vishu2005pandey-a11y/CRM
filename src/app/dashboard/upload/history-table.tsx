@@ -47,9 +47,10 @@ export function HistoryTable({ history }: { history: any[] }) {
   }
 
   return (
-    <div className="glass-card rounded-2xl overflow-x-auto border border-white/10">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-white/5 border-b border-white/10 text-muted-foreground whitespace-nowrap">
+    <div className="glass-card rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 w-full">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full min-w-[800px] text-sm text-left">
+          <thead className="bg-white/5 border-b border-white/10 text-muted-foreground whitespace-nowrap">
           <tr>
             <th className="px-6 py-4 font-medium">Date</th>
             <th className="px-6 py-4 font-medium">File Name</th>
@@ -116,6 +117,7 @@ export function HistoryTable({ history }: { history: any[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

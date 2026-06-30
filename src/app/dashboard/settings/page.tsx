@@ -79,15 +79,15 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground mt-1">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Settings</h2>
+        <p className="text-sm md:text-base text-muted-foreground mt-1">
           Manage your account settings and API integrations.
         </p>
       </div>
 
-        <div className="flex-1 glass-card p-6 rounded-3xl min-h-[400px]">
+        <div className="flex-1 glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl min-h-[400px]">
           <div className="space-y-6 animate-in fade-in zoom-in-95">
               <div>
                 <h3 className="text-xl font-bold">Profile Details</h3>
@@ -99,17 +99,17 @@ export default function SettingsPage() {
                 
                 <div className="space-y-2">
                   <Label>Profile Picture</Label>
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                     {profile.profileImage ? (
-                      <img src={profile.profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover border-2 border-primary" />
+                      <img src={profile.profileImage} alt="Profile" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-primary" />
                     ) : (
-                      <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-white/20">
-                        <UserCircle className="h-10 w-10 text-muted-foreground" />
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-white/20">
+                        <UserCircle className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <div>
-                      <Label htmlFor="picture-upload" className="cursor-pointer">
-                        <div className="inline-flex items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                    <div className="w-full sm:w-auto">
+                      <Label htmlFor="picture-upload" className="cursor-pointer block">
+                        <div className="inline-flex w-full sm:w-auto items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 sm:h-10 px-4 py-2 gap-2">
                           <Upload className="h-4 w-4" />
                           {profile.profileImage ? "Change Picture" : "Upload Picture"}
                         </div>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                 <Button 
                   onClick={handleProfileSave}
                   disabled={savingProfile}
-                  className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 shadow-glow"
+                  className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 shadow-glow w-full sm:w-auto h-11 sm:h-10"
                 >
                   {savingProfile ? "Updating..." : "Update Profile"}
                 </Button>

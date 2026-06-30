@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const result = initCsvSchema.safeParse(body);
     
     if (!result.success) {
-      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.errors }), { status: 400, headers: { "Content-Type": "application/json" } });
+      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.issues }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     const { fileName, totalSize } = result.data;

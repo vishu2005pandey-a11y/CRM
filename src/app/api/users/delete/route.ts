@@ -14,7 +14,7 @@ export async function DELETE(req: Request) {
     const body = await req.json();
     const result = deleteUserSchema.safeParse(body);
     if (!result.success) {
-      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.errors }), { status: 400, headers: { "Content-Type": "application/json" } });
+      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.issues }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     const { id } = result.data;

@@ -131,7 +131,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="glass-card border-none col-span-4">
+        <Card className="glass-card border-none lg:col-span-4">
           <CardHeader>
             <CardTitle>Broadcast Overview (This Year)</CardTitle>
           </CardHeader>
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="glass-card border-none col-span-3">
+        <Card className="glass-card border-none lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>

@@ -53,24 +53,24 @@ export function HistoryClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/broadcasts">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <Link href="/dashboard/broadcasts" className="shrink-0">
           <Button variant="ghost" size="icon" className="rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h2>
           <p className="text-muted-foreground mt-1">
             {subtitle}
           </p>
         </div>
       </div>
 
-      <div className="glass-card rounded-3xl overflow-hidden border border-white/10">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className="glass-card rounded-2xl md:rounded-3xl overflow-hidden border border-white/10">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-white/10 bg-white/5">
                 <th className="px-6 py-4 text-left text-sm font-semibold text-muted-foreground">Date</th>

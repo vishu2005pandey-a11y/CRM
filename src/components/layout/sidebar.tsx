@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
+import { useSidebar } from "@/contexts/sidebar-context";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -28,6 +30,34 @@ export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = session?.user?.role;
+  const { isOpen, setIsOpen } = useSidebar();
+  
+  // Auto-close sidebar on mobile when navigating
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
+    
+    // Initial check
+    if (typeof window !== "undefined") {
+      if (window.innerWidth >= 1024) {
+        setIsOpen(true);
+      }
+    }
+    
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setIsOpen]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setIsOpen(false);
+    }
+  }, [pathname, setIsOpen]);
 
   const visibleNavItems = navItems.filter(item => {
     if (!item.roles) return true;
@@ -36,12 +66,26 @@ export function Sidebar() {
   });
 
   return (
-    <motion.aside
-      initial={{ x: -250 }}
-      animate={{ x: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className="h-screen w-64 glass-card border-r-0 rounded-none rounded-r-3xl fixed left-0 top-0 z-40 flex flex-col justify-between"
-    >
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Mobile Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
+            />
+            
+            <motion.aside
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="h-screen w-64 glass-card border-r-0 rounded-none rounded-r-3xl fixed left-0 top-0 z-50 flex flex-col justify-between shadow-2xl lg:shadow-none"
+            >
       <div>
         <div className="h-20 flex items-center px-8 border-b border-white/5">
           <h1 className={cn(
@@ -82,15 +126,19 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 mb-4">
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex w-full items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all duration-300"
+          className="flex w-full items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all duration-300 min-h-[44px]"
         >
           <LogOut className="h-5 w-5" />
           <span>Logout</span>
         </button>
       </div>
     </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

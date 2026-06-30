@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const result = createAdminSchema.safeParse(body);
     
     if (!result.success) {
-      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.errors }), { status: 400, headers: { "Content-Type": "application/json" } });
+      return new NextResponse(JSON.stringify({ error: "Invalid input", details: result.error.issues }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     const { name, email, password, states, csvId } = result.data;

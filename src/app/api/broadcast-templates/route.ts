@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const result = broadcastTemplateSchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json({ error: "Invalid input", details: result.error.errors }, { status: 400 });
+      return NextResponse.json({ error: "Invalid input", details: result.error.issues }, { status: 400 });
     }
 
     const { name, messageBody, imageUrl, buttons } = result.data;

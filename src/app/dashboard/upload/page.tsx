@@ -24,15 +24,15 @@ export default async function UploadPage() {
   });
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Upload Leads</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Upload Leads</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Import customers via CSV to start broadcasting promotional messages.
           </p>
         </div>
-        <Button variant="outline" className="glass-card gap-2 rounded-full">
+        <Button variant="outline" className="glass-card gap-2 rounded-full w-full sm:w-auto">
           <Download className="h-4 w-4" />
           Download Template
         </Button>

@@ -33,15 +33,15 @@ export default async function AdminsPage() {
   const data = await getAdmins();
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Admins</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Admins</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Manage your administrators and their assigned states.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           {session?.user?.role === "SUPER_ADMIN" && (
             <Link href="/dashboard/upload">
               <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 shadow-glow">
@@ -55,7 +55,7 @@ export default async function AdminsPage() {
         </div>
       </div>
 
-      <div className="glass-card p-6 rounded-2xl">
+      <div className="glass-card p-4 md:p-6 rounded-2xl">
         <DataTable columns={columns} data={data} />
       </div>
     </div>

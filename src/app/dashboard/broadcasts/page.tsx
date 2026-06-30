@@ -40,24 +40,24 @@ export default async function BroadcastsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">WhatsApp Broadcast</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">WhatsApp Broadcast</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Send bulk messages to your targeted customer segments.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {["SUPER_ADMIN", "ADMIN"].includes(session.user.role) && (
-            <Link href="/dashboard/broadcasts/templates">
-              <Button variant="outline" className="glass-card rounded-full gap-2">
+            <Link href="/dashboard/broadcasts/templates" className="w-full sm:w-auto">
+              <Button variant="outline" className="glass-card rounded-full gap-2 w-full sm:w-auto">
                 <LayoutTemplate className="h-4 w-4" /> Manage Templates
               </Button>
             </Link>
           )}
-          <Link href="/dashboard/broadcasts/history">
-            <Button variant="outline" className="glass-card rounded-full gap-2">
+          <Link href="/dashboard/broadcasts/history" className="w-full sm:w-auto">
+            <Button variant="outline" className="glass-card rounded-full gap-2 w-full sm:w-auto">
               <History className="h-4 w-4" /> History
             </Button>
           </Link>

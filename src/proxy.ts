@@ -6,7 +6,7 @@ const rateLimitMap = new Map<string, { count: number, resetTime: number }>();
 export default withAuth(
   function middleware(req) {
     // Basic Rate Limiting
-    const ip = req.headers.get("x-forwarded-for") || req.ip || "127.0.0.1";
+    const ip = req.headers.get("x-forwarded-for") || (req as any).ip || "127.0.0.1";
     const now = Date.now();
     const windowMs = 60 * 1000; // 1 min
     const maxRequests = 100; // 100 reqs / min

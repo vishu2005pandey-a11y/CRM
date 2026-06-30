@@ -123,16 +123,16 @@ export function TemplatesClient() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/broadcasts">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <Link href="/dashboard/broadcasts" className="shrink-0">
           <Button variant="ghost" size="icon" className="rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Manage Templates</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Manage Templates</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Create pre-approved templates for Admins to use.
           </p>
         </div>

@@ -47,22 +47,22 @@ export default async function OrdersPage() {
   const data = await getOrders(session?.user?.role, session?.user?.id);
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Orders</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Orders</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Manage customer orders.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="glass-card rounded-full gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="glass-card rounded-full gap-2 w-full sm:w-auto">
             <Download className="h-4 w-4" /> Export
           </Button>
         </div>
       </div>
 
-      <div className="glass-card p-6 rounded-2xl">
+      <div className="glass-card p-4 md:p-6 rounded-2xl">
         <DataTable columns={columns} data={data} searchKey="id" />
       </div>
     </div>
