@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { SidebarProvider } from "@/contexts/sidebar-context";
+import { prisma } from "@/lib/db";
+import { ForceLogout } from "@/components/auth/force-logout";
 
 export default async function DashboardLayout({
   children,
@@ -14,6 +16,16 @@ export default async function DashboardLayout({
 
   if (!session) {
     redirect("/login");
+  }
+
+  if (session.user.role === "ADMIN") {
+    const profile = await prisma.adminProfile.findUnique({
+      where: { userId: session.user.id },
+    });
+    
+    if (profile?.status === "SUSPENDED") {
+      return <ForceLogout />;
+    }
   }
 
   return (

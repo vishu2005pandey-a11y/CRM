@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,9 @@ export function LoginForm() {
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   
-  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
+  const [error, setError] = useState(urlError === "ACCOUNT_SUSPENDED" ? "Your account has been suspended by the Super Admin." : "");
   const [loading, setLoading] = useState(false);
 
   const handleRoleChange = (newRole: RoleType) => {
