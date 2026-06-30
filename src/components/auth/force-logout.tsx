@@ -4,10 +4,11 @@ import { useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 
-export function ForceLogout() {
+export function ForceLogout({ userId }: { userId?: string }) {
   useEffect(() => {
-    signOut({ callbackUrl: "/login?error=ACCOUNT_SUSPENDED" });
-  }, []);
+    const suffix = userId ? `&userId=${userId}` : "";
+    signOut({ callbackUrl: `/login?error=ACCOUNT_SUSPENDED${suffix}` });
+  }, [userId]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">

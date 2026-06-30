@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
       // Fire real-time event so the specific admin is immediately logged out if suspended
       if (status === "SUSPENDED") {
         await pusherServer.trigger(`user-${userId}`, 'account-suspended', {});
+      } else if (status === "ACTIVE") {
+        await pusherServer.trigger(`user-${userId}`, 'account-activated', {});
       }
     }
 

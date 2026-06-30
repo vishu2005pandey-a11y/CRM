@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, ArrowRight, Loader2, UserCog, UserCheck, Bike, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { getPusherClient } from "@/lib/pusher";
 
 type RoleType = "SUPER_ADMIN" | "ADMIN";
 type AuthMode = "LOGIN";
@@ -26,8 +28,31 @@ export function LoginForm() {
   
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
+  const userId = searchParams.get("userId");
+  
   const [error, setError] = useState(urlError === "ACCOUNT_SUSPENDED" ? "Your account has been suspended by the Super Admin." : "");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!userId) return;
+    const pusher = getPusherClient();
+    if (!pusher) return;
+    
+    const channelName = `user-${userId}`;
+    const channel = pusher.subscribe(channelName);
+    
+    channel.bind("account-activated", () => {
+      setError("");
+      toast.success("Your account has been activated! Please log in.");
+      // Clear url params without refreshing
+      router.replace("/login");
+    });
+    
+    return () => {
+      channel.unbind("account-activated");
+      pusher.unsubscribe(channelName);
+    };
+  }, [userId, router]);
 
   const handleRoleChange = (newRole: RoleType) => {
     setRole(newRole);

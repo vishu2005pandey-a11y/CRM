@@ -27,7 +27,7 @@ export function Header({ user }: { user: any }) {
     const channel = pusher.subscribe(channelName);
     
     channel.bind("account-suspended", () => {
-      signOut({ callbackUrl: "/login?error=ACCOUNT_SUSPENDED" });
+      signOut({ callbackUrl: `/login?error=ACCOUNT_SUSPENDED&userId=${user.id}` });
     });
     
     return () => {

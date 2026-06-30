@@ -24,7 +24,7 @@ export default async function DashboardLayout({
     });
     
     if (profile?.status === "SUSPENDED") {
-      return <ForceLogout />;
+      return <ForceLogout userId={session.user.id} />;
     }
   }
 
