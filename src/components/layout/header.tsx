@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Bell, Search, Menu } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,9 +13,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
 import { useSidebar } from "@/contexts/sidebar-context";
+import { getPusherClient } from "@/lib/pusher";
 
 export function Header({ user }: { user: any }) {
   const { toggle } = useSidebar();
+  
+  useEffect(() => {
+    if (!user?.id) return;
+    const pusher = getPusherClient();
+    if (!pusher) return;
+    
+    const channelName = `user-${user.id}`;
+    const channel = pusher.subscribe(channelName);
+    
+    channel.bind("account-suspended", () => {
+      signOut({ callbackUrl: "/login?error=ACCOUNT_SUSPENDED" });
+    });
+    
+    return () => {
+      channel.unbind("account-suspended");
+      pusher.unsubscribe(channelName);
+    };
+  }, [user?.id]);
   return (
     <header className="h-16 md:h-20 glass sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between border-b-0 border-white/5 shadow-sm">
       <div className="flex items-center gap-4 w-full max-w-md">
