@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          profileImage: user.profileImage,
         };
       } catch (error) {
         console.error("Auth error:", error);
@@ -65,17 +66,30 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.profileImage = (user as any).profileImage;
       }
+      
+      // Handle manual session update
+      if (trigger === "update" && session?.profileImage !== undefined) {
+        if (!session.profileImage.startsWith('data:image')) {
+          token.profileImage = session.profileImage;
+        }
+      }
+      if (trigger === "update" && session?.name) {
+        token.name = session.name;
+      }
+      
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
+        (session.user as any).profileImage = token.profileImage as string;
       }
       return session;
     },

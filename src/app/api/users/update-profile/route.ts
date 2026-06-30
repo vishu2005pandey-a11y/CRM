@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     };
 
     if (finalImageUrl !== undefined) {
-      dataToUpdate.profileImage = finalImageUrl;
+      dataToUpdate.profileImage = finalImageUrl === "" ? null : finalImageUrl;
     }
 
     await prisma.user.update({
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       data: dataToUpdate,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, profileImage: finalImageUrl });
   } catch (error) {
     console.error("Profile update error:", error);
     return new NextResponse("Internal Error", { status: 500 });

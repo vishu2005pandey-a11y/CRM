@@ -26,7 +26,7 @@ export const updateOrderStatusSchema = z.object({
 export const updateProfileSchema = z.object({
   name: z.string().min(2).max(100).optional(),
   email: z.string().email().optional(),
-  profileImage: z.string().url().or(z.string().startsWith("data:image/")).optional().nullable(),
+  profileImage: z.string().url().or(z.string().startsWith("data:image/")).or(z.literal("")).optional().nullable(),
 });
 
 export const initCsvSchema = z.object({

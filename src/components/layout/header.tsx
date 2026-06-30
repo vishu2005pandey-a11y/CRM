@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { Bell, Search, Menu } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -46,16 +46,24 @@ export function Header({ user }: { user: any }) {
                 <p className="text-xs text-muted-foreground mt-1 capitalize">{user?.role?.toLowerCase().replace("_", " ")}</p>
               </div>
               <Avatar className="h-9 w-9 border border-primary/20">
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  {user?.name?.charAt(0) || "A"}
-                </AvatarFallback>
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt={user.name} className="h-full w-full object-cover rounded-full" />
+                ) : (
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {user?.name?.charAt(0) || "A"}
+                  </AvatarFallback>
+                )}
               </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 glass-card border-white/10">
             <div className="px-2 py-1.5 text-sm font-semibold">My Account</div>
             <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <Link href="/dashboard/settings">
+              <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
+            </Link>
+            <Link href="/dashboard/settings">
+              <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
+            </Link>
             <DropdownMenuSeparator className="bg-white/10" />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })} className="text-destructive focus:bg-destructive/10">
               Log out

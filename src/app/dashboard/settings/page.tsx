@@ -9,10 +9,18 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [activeTab, setActiveTab] = useState("api");
   const [saving, setSaving] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
+  
+  // Password state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [savingPassword, setSavingPassword] = useState(false);
 
   const [profile, setProfile] = useState({
     name: "",
@@ -67,7 +75,12 @@ export default function SettingsPage() {
       });
 
       if (res.ok) {
+        const data = await res.json();
         toast.success("Profile updated successfully!");
+        // Update local session to reflect the new name/image immediately without sending base64
+        await update({ name: profile.name, profileImage: data.profileImage });
+        // Refresh router so layout server component fetches the new session
+        window.location.reload();
       } else {
         toast.error("Failed to update profile");
       }
@@ -75,6 +88,42 @@ export default function SettingsPage() {
       toast.error("Error updating profile");
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setProfile(prev => ({ ...prev, profileImage: "" }));
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    
+    setSavingPassword(true);
+    try {
+      const res = await fetch("/api/users/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          currentPassword: passwordData.currentPassword, 
+          newPassword: passwordData.newPassword 
+        }),
+      });
+
+      if (res.ok) {
+        toast.success("Password changed successfully!");
+        setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Failed to change password. Check current password.");
+      }
+    } catch (err) {
+      toast.error("An error occurred");
+    } finally {
+      setSavingPassword(false);
     }
   };
 
@@ -107,8 +156,8 @@ export default function SettingsPage() {
                         <UserCircle className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <div className="w-full sm:w-auto">
-                      <Label htmlFor="picture-upload" className="cursor-pointer block">
+                    <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+                      <Label htmlFor="picture-upload" className="cursor-pointer block w-full sm:w-auto">
                         <div className="inline-flex w-full sm:w-auto items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 sm:h-10 px-4 py-2 gap-2">
                           <Upload className="h-4 w-4" />
                           {profile.profileImage ? "Change Picture" : "Upload Picture"}
@@ -121,8 +170,17 @@ export default function SettingsPage() {
                         className="hidden" 
                         onChange={handleImageChange}
                       />
-                      <p className="text-xs text-muted-foreground mt-2">Recommended: Square image, max 2MB (JPG/PNG).</p>
+                      {profile.profileImage && (
+                        <Button 
+                          variant="outline" 
+                          onClick={handleRemovePhoto}
+                          className="rounded-full h-11 sm:h-10 px-4 text-destructive hover:bg-destructive/10 border-destructive/20 w-full sm:w-auto"
+                        >
+                          Remove Photo
+                        </Button>
+                      )}
                     </div>
+                    <p className="text-xs text-muted-foreground mt-2 sm:mt-0">Recommended: Square image, max 2MB (JPG/PNG).</p>
                   </div>
                 </div>
 
@@ -143,7 +201,11 @@ export default function SettingsPage() {
                     className="glass border-white/10"
                     value={profile.email}
                     onChange={e => setProfile({...profile, email: e.target.value})}
+                    disabled={session?.user?.role === "ADMIN"}
                   />
+                  {session?.user?.role === "ADMIN" && (
+                    <p className="text-xs text-muted-foreground">Email cannot be changed by administrators.</p>
+                  )}
                 </div>
               </div>
               <div className="pt-4">
@@ -156,6 +218,67 @@ export default function SettingsPage() {
                 </Button>
           </div>
         </div>
+
+        {session?.user?.role === "SUPER_ADMIN" && (
+          <div className="flex-1 glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl mt-8">
+            <div className="space-y-6 animate-in fade-in zoom-in-95 delay-150 fill-mode-both">
+                <div>
+                  <h3 className="text-xl font-bold text-red-400">Security Settings</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Change your super admin password securely.
+                  </p>
+                </div>
+                
+                <form onSubmit={handlePasswordChange} className="space-y-6 pt-4 border-t border-white/5">
+                  <div className="space-y-2">
+                    <Label>Current Password</Label>
+                    <Input 
+                      type="password"
+                      required
+                      placeholder="Enter current password"
+                      className="glass border-white/10" 
+                      value={passwordData.currentPassword}
+                      onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>New Password</Label>
+                    <Input 
+                      type="password"
+                      required
+                      placeholder="Enter new password"
+                      className="glass border-white/10" 
+                      value={passwordData.newPassword}
+                      onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Confirm New Password</Label>
+                    <Input 
+                      type="password"
+                      required
+                      placeholder="Confirm new password"
+                      className="glass border-white/10" 
+                      value={passwordData.confirmPassword}
+                      onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Button 
+                      type="submit"
+                      disabled={savingPassword}
+                      className="bg-red-500 hover:bg-red-600 text-white rounded-full px-8 shadow-glow w-full sm:w-auto h-11 sm:h-10"
+                    >
+                      {savingPassword ? "Changing..." : "Change Password"}
+                    </Button>
+                  </div>
+                </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

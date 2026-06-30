@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 interface Broadcast {
   id: string;
   template: { name: string, messageBody: string };
-  sender: { name: string, email: string };
+  sender: { name: string, email: string, profileImage?: string };
   targetState: string;
   status: string;
   totalSent: number;
@@ -107,8 +107,19 @@ export function HistoryClient({
                     </td>
                     {isSuperAdmin && (
                       <td className="px-6 py-4">
-                        <div className="text-sm">{b.sender.name}</div>
-                        <div className="text-xs text-muted-foreground">{b.sender.email}</div>
+                        <div className="flex items-center gap-3">
+                          {b.sender.profileImage ? (
+                            <img src={b.sender.profileImage} alt={b.sender.name} className="w-8 h-8 rounded-full object-cover border border-primary/20" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20">
+                              {b.sender.name.substring(0, 2).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <div className="text-sm font-medium">{b.sender.name}</div>
+                            <div className="text-xs text-muted-foreground">{b.sender.email}</div>
+                          </div>
+                        </div>
                       </td>
                     )}
                     <td className="px-6 py-4">

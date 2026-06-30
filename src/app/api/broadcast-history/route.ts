@@ -27,7 +27,7 @@ export async function GET(req: Request) {
           select: { name: true, messageBody: true }
         },
         sender: {
-          select: { name: true, email: true }
+          select: { name: true, email: true, profileImage: true }
         }
       },
       orderBy: { createdAt: "desc" },
