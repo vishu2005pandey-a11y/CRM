@@ -46,7 +46,8 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        if (res.error === "ACCOUNT_SUSPENDED") {
+        console.log("NextAuth Error:", res.error);
+        if (res.error.includes("ACCOUNT_SUSPENDED")) {
           setError("Your account has been suspended by the Super Admin.");
           toast.error("Your account has been suspended by the Super Admin.");
         } else {
