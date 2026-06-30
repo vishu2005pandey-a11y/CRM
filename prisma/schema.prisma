@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name         String
+  profileImage String?
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  adminProfile       AdminProfile?
+  broadcasts         Broadcast[]
+  broadcastTemplates BroadcastTemplate[]
+  csvUploads         CsvUploadHistory[]
+}
+
+model AdminProfile {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedStates String[] // e.g., ["Delhi", "Maharashtra"] (kept for legacy/fallback)
+  assignedCsvIds String[] @default([]) // Strict CSV-based isolation
+  status         String   @default("ACTIVE") // ACTIVE, SUSPENDED
+}
+
+
+model Customer {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone       String   @unique
+  name        String
+  state       String
+  city        String?
+  district    String?
+  address     String?
+  status      String   @default("NEW") // NEW, CONTACTED, CONVERTED, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  csvUploadId String?  @db.ObjectId
+  csvUpload   CsvUploadHistory? @relation(fields: [csvUploadId], references: [id])
+
+  orders   Order[]
+  messages Message[]
+}
+
+model Order {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber   String   @unique
+  customerId    String   @db.ObjectId
+  customer      Customer @relation(fields: [customerId], references: [id])
+  state         String   // Duplicated here for easier admin filtering
+  status        String   @default("PENDING") // PENDING, ASSIGNED, DELIVERED, CANCELLED, REJECTED
+  totalAmount   Float
+  paymentStatus String   @default("UNPAID") // UNPAID, PAID
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+
+model BroadcastTemplate {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  messageBody String
+  imageUrl    String?
+  buttons     Json     @default("[]")
+  createdBy   String   @db.ObjectId
+  creator     User     @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  broadcasts  Broadcast[]
+}
+
+model Broadcast {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  templateId    String   @db.ObjectId
+  template      BroadcastTemplate @relation(fields: [templateId], references: [id])
+  senderId      String   @db.ObjectId
+  sender        User     @relation(fields: [senderId], references: [id])
+  targetState   String   // The state this was broadcasted to
+  status        String   @default("DRAFT") // DRAFT, SENDING, COMPLETED, FAILED
+  totalSent     Int      @default(0)
+  totalDelivered Int      @default(0)
+  totalFailed   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages Message[]
+}
+
+model Message {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  broadcastId String    @db.ObjectId
+  broadcast   Broadcast @relation(fields: [broadcastId], references: [id])
+  customerId  String    @db.ObjectId
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  status      String    @default("PENDING") // PENDING, SENT, DELIVERED, READ, FAILED
+  sentAt      DateTime?
+  whatsappId  String?   // The message ID returned by WhatsApp API
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  userId    String   @db.ObjectId // Can be any user role
+  createdAt DateTime @default(now())
+}
+
+model CsvUploadHistory {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  fileName          String
+  statesUploaded    String[]
+  totalRows         Int
+  duplicatesSkipped Int
+  validRecords      Int
+  uploadedBy        String   @db.ObjectId
+  user              User     @relation(fields: [uploadedBy], references: [id])
+  createdAt         DateTime @default(now())
+
+  customers         Customer[]
+}

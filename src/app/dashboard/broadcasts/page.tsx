@@ -1,0 +1,70 @@
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { BroadcastForm } from "@/components/broadcasts/broadcast-form";
+import { History, LayoutTemplate } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
+
+export default async function BroadcastsPage() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    redirect("/login");
+  }
+
+  let targetCount = 0;
+  let targetDescription = "All Customers";
+  let adminCount = 0;
+
+  if (session.user.role === "SUPER_ADMIN") {
+    targetCount = await prisma.customer.count();
+    adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+  } else if (session.user.role === "ADMIN") {
+    const admin = await prisma.adminProfile.findUnique({
+      where: { userId: session.user.id },
+    });
+    
+    if (admin?.assignedCsvIds?.length) {
+      targetCount = await prisma.customer.count({
+        where: { csvUploadId: { in: admin.assignedCsvIds } },
+      });
+      targetDescription = `CSV IDs: ${admin.assignedCsvIds.join(", ")}`;
+    } else if (admin?.assignedStates?.length) {
+      targetCount = await prisma.customer.count({
+        where: { state: { in: admin.assignedStates } },
+      });
+      targetDescription = `Customers in ${admin.assignedStates.join(", ")}`;
+    }
+  }
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">WhatsApp Broadcast</h2>
+          <p className="text-muted-foreground mt-1">
+            Send bulk messages to your targeted customer segments.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {["SUPER_ADMIN", "ADMIN"].includes(session.user.role) && (
+            <Link href="/dashboard/broadcasts/templates">
+              <Button variant="outline" className="glass-card rounded-full gap-2">
+                <LayoutTemplate className="h-4 w-4" /> Manage Templates
+              </Button>
+            </Link>
+          )}
+          <Link href="/dashboard/broadcasts/history">
+            <Button variant="outline" className="glass-card rounded-full gap-2">
+              <History className="h-4 w-4" /> History
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <BroadcastForm role={session.user.role} targetCount={targetCount} targetDescription={targetDescription} adminCount={adminCount} />
+    </div>
+  );
+}
