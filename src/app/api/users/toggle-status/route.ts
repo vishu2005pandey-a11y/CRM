@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { toggleStatusSchema } from "@/lib/validations";
-import { pusherServer } from "@/lib/pusher";
+import { getPusherServer } from "@/lib/pusher";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,8 +29,10 @@ export async function POST(req: NextRequest) {
       
       // Fire real-time event so the specific admin is immediately logged out if suspended
       if (status === "SUSPENDED") {
+        const pusherServer = getPusherServer();
         await pusherServer.trigger(`user-${userId}`, 'account-suspended', {});
       } else if (status === "ACTIVE") {
+        const pusherServer = getPusherServer();
         await pusherServer.trigger(`user-${userId}`, 'account-activated', {});
       }
     }
