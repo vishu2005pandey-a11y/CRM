@@ -1,7 +1,7 @@
 import { Admin, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { AddAdminDialog } from "./add-admin-dialog";
-
+import { AdminsPageHeader } from "./admins-header";
 import { prisma } from "@/lib/db";
 
 async function getAdmins(): Promise<Admin[]> {
@@ -35,12 +35,7 @@ export default async function AdminsPage() {
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Admins</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
-            Manage your administrators and their assigned states.
-          </p>
-        </div>
+        <AdminsPageHeader />
         <div className="flex items-center gap-3 w-full sm:w-auto">
           {session?.user?.role === "SUPER_ADMIN" && (
             <Link href="/dashboard/upload">

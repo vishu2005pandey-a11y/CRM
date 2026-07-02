@@ -1,11 +1,8 @@
 import { Customer, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
-import { Download, Filter } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import Link from "next/link";
-
+import { CustomersPageHeader } from "./customers-header";
 import { prisma } from "@/lib/db";
 
 async function getCustomers(role?: string, userId?: string): Promise<Customer[]> {
@@ -83,29 +80,7 @@ export default async function CustomersPage() {
 
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Customers</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
-            Manage your leads and their statuses.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN" ? (
-              <Link href="/dashboard/upload">
-               <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 shadow-glow gap-2">
-                 Add Customer
-               </Button>
-             </Link>
-          ) : null}
-          <Button variant="outline" className="glass-card rounded-full gap-2">
-            <Filter className="h-4 w-4" /> Filter
-          </Button>
-          <Button variant="outline" className="glass-card rounded-full gap-2">
-            <Download className="h-4 w-4" /> Export
-          </Button>
-        </div>
-      </div>
+      <CustomersPageHeader role={session?.user?.role} />
 
       <div className="glass-card p-4 md:p-6 rounded-2xl">
         <DataTable columns={columns} data={data} searchKey="phone" />

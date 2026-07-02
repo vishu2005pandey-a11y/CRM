@@ -1,12 +1,15 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-const rateLimitMap = new Map<string, { count: number, resetTime: number }>();
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 export default withAuth(
   function middleware(req) {
     // Basic Rate Limiting
-    const ip = req.headers.get("x-forwarded-for") || (req as any).ip || "127.0.0.1";
+    const ip =
+      req.headers.get("x-forwarded-for") ||
+      (req as any).ip ||
+      "127.0.0.1";
     const now = Date.now();
     const windowMs = 60 * 1000; // 1 min
     const maxRequests = 100; // 100 reqs / min
@@ -18,7 +21,9 @@ export default withAuth(
       } else {
         rateData.count++;
         if (rateData.count > maxRequests) {
-          return new NextResponse("Too Many Requests - Rate Limit Exceeded", { status: 429 });
+          return new NextResponse("Too Many Requests - Rate Limit Exceeded", {
+            status: 429,
+          });
         }
       }
     } else {
@@ -27,8 +32,18 @@ export default withAuth(
 
     const token = req.nextauth.token;
     const isAuth = !!token;
-    const isAuthPage = req.nextUrl.pathname.startsWith("/login");
-    const role = token?.role;
+    const pathname = req.nextUrl.pathname;
+
+    const isAuthPage = pathname.startsWith("/login");
+    const isRootPage = pathname === "/";
+
+    // Redirect root → login (or dashboard if already authenticated)
+    if (isRootPage) {
+      if (isAuth) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
 
     if (isAuthPage) {
       if (isAuth) {
@@ -38,7 +53,7 @@ export default withAuth(
     }
 
     if (!isAuth) {
-      let from = req.nextUrl.pathname;
+      let from = pathname;
       if (req.nextUrl.search) {
         from += req.nextUrl.search;
       }
@@ -46,15 +61,11 @@ export default withAuth(
         new URL(`/login?from=${encodeURIComponent(from)}`, req.url)
       );
     }
-
-
   },
   {
     callbacks: {
       authorized() {
-        // This is a work-around for handling redirect on auth pages.
-        // We return true here so that the middleware function above
-        // is always called.
+        // Always call the middleware function above so we handle redirects manually
         return true;
       },
     },
@@ -62,5 +73,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/", "/dashboard/:path*", "/login"],
 };

@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Save, UserCircle, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("api");
   const [saving, setSaving] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -130,24 +132,24 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
       <div>
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Settings</h2>
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{t.settings.title}</h2>
         <p className="text-sm md:text-base text-muted-foreground mt-1">
-          Manage your account settings and API integrations.
+          {t.settings.subtitle}
         </p>
       </div>
 
         <div className="flex-1 glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl min-h-[400px]">
           <div className="space-y-6 animate-in fade-in zoom-in-95">
               <div>
-                <h3 className="text-xl font-bold">Profile Details</h3>
+                <h3 className="text-xl font-bold">{t.settings.profileDetails}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Update your personal information and profile picture.
+                  {t.settings.profileDetailsSubtitle}
                 </p>
               </div>
               <div className="space-y-6 pt-4 border-t border-white/5">
                 
                 <div className="space-y-2">
-                  <Label>Profile Picture</Label>
+                  <Label>{t.settings.profilePicture}</Label>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                     {profile.profileImage ? (
                       <img src={profile.profileImage} alt="Profile" className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-primary" />
@@ -160,7 +162,7 @@ export default function SettingsPage() {
                       <Label htmlFor="picture-upload" className="cursor-pointer block w-full sm:w-auto">
                         <div className="inline-flex w-full sm:w-auto items-center justify-center rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 sm:h-10 px-4 py-2 gap-2">
                           <Upload className="h-4 w-4" />
-                          {profile.profileImage ? "Change Picture" : "Upload Picture"}
+                          {profile.profileImage ? t.settings.changePicture : t.settings.uploadPicture}
                         </div>
                       </Label>
                       <Input 
@@ -176,35 +178,35 @@ export default function SettingsPage() {
                           onClick={handleRemovePhoto}
                           className="rounded-full h-11 sm:h-10 px-4 text-destructive hover:bg-destructive/10 border-destructive/20 w-full sm:w-auto"
                         >
-                          Remove Photo
+                          {t.settings.removePhoto}
                         </Button>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2 sm:mt-0">Recommended: Square image, max 2MB (JPG/PNG).</p>
+                    <p className="text-xs text-muted-foreground mt-2 sm:mt-0">{t.settings.pictureHint}</p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Full Name</Label>
+                  <Label>{t.settings.fullName}</Label>
                   <Input 
-                    placeholder="Enter your name"
+                    placeholder={t.settings.namePlaceholder}
                     className="glass border-white/10" 
                     value={profile.name}
                     onChange={e => setProfile({...profile, name: e.target.value})}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Email Address</Label>
+                  <Label>{t.settings.emailAddress}</Label>
                   <Input 
                     type="email" 
-                    placeholder="Enter your email"
+                    placeholder={t.settings.emailPlaceholder}
                     className="glass border-white/10"
                     value={profile.email}
                     onChange={e => setProfile({...profile, email: e.target.value})}
                     disabled={session?.user?.role === "ADMIN"}
                   />
                   {session?.user?.role === "ADMIN" && (
-                    <p className="text-xs text-muted-foreground">Email cannot be changed by administrators.</p>
+                    <p className="text-xs text-muted-foreground">{t.settings.emailAdminNote}</p>
                   )}
                 </div>
               </div>
@@ -214,7 +216,7 @@ export default function SettingsPage() {
                   disabled={savingProfile}
                   className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 shadow-glow w-full sm:w-auto h-11 sm:h-10"
                 >
-                  {savingProfile ? "Updating..." : "Update Profile"}
+                  {savingProfile ? t.settings.updating : t.settings.updateProfile}
                 </Button>
           </div>
         </div>
@@ -223,19 +225,19 @@ export default function SettingsPage() {
           <div className="flex-1 glass-card p-4 md:p-6 rounded-2xl md:rounded-3xl mt-8">
             <div className="space-y-6 animate-in fade-in zoom-in-95 delay-150 fill-mode-both">
                 <div>
-                  <h3 className="text-xl font-bold text-red-400">Security Settings</h3>
+                  <h3 className="text-xl font-bold text-red-400">{t.settings.securitySettings}</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Change your super admin password securely.
+                    {t.settings.securitySubtitle}
                   </p>
                 </div>
                 
                 <form onSubmit={handlePasswordChange} className="space-y-6 pt-4 border-t border-white/5">
                   <div className="space-y-2">
-                    <Label>Current Password</Label>
+                    <Label>{t.settings.currentPassword}</Label>
                     <Input 
                       type="password"
                       required
-                      placeholder="Enter current password"
+                      placeholder={t.settings.currentPasswordPlaceholder}
                       className="glass border-white/10" 
                       value={passwordData.currentPassword}
                       onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})}
@@ -243,11 +245,11 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>New Password</Label>
+                    <Label>{t.settings.newPassword}</Label>
                     <Input 
                       type="password"
                       required
-                      placeholder="Enter new password"
+                      placeholder={t.settings.newPasswordPlaceholder}
                       className="glass border-white/10" 
                       value={passwordData.newPassword}
                       onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})}
@@ -255,11 +257,11 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>Confirm New Password</Label>
+                    <Label>{t.settings.confirmNewPassword}</Label>
                     <Input 
                       type="password"
                       required
-                      placeholder="Confirm new password"
+                      placeholder={t.settings.confirmPasswordPlaceholder}
                       className="glass border-white/10" 
                       value={passwordData.confirmPassword}
                       onChange={e => setPasswordData({...passwordData, confirmPassword: e.target.value})}
@@ -272,7 +274,7 @@ export default function SettingsPage() {
                       disabled={savingPassword}
                       className="bg-red-500 hover:bg-red-600 text-white rounded-full px-8 shadow-glow w-full sm:w-auto h-11 sm:h-10"
                     >
-                      {savingPassword ? "Changing..." : "Change Password"}
+                      {savingPassword ? t.settings.changing : t.settings.changePassword}
                     </Button>
                   </div>
                 </form>
